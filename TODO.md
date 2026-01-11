@@ -1,0 +1,3 @@
+- Params: book name, poem name
+- CmdArgs: show books, list poems
+- Automatically derive poem count and choose randomly

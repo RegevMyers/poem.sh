@@ -1,12 +1,19 @@
-function print_poem {
+function build_format {
   local title_style="\u001b[1m"
-  local reset_style="\u001b[0m"
+  local content_style="\u001b[0m"
+  local separator='\n\n'
 
+  local title="\(.key)"
+  local content="\(.value)"
+
+  local format="\"$title_style$title$separator$content_style$content\""
+
+  echo $format
+}
+
+function print_poem {
   local index=$(shuf -i 0-80 -n 1)
-  
-  local format="\"$title_style\(.key)\n\n$reset_style\(.value)\""
-
-  jq -r ".[$index] | to_entries.[0] | $format" data/gia-fu-feng.json
+  jq -r ".[$index] | to_entries.[0] | $(build_format)" books/dao-de-jing.json
 }
 
 print_poem

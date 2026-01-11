@@ -1,3 +1,5 @@
 - Params: book name, poem name
 - CmdArgs: show books, list poems
 - Automatically derive poem count and choose randomly
+- change book json to include name and author
+- change gia-fu-feng book name

@@ -13,7 +13,7 @@ function build_format {
 
 function print_poem {
   local index=$(shuf -i 0-80 -n 1)
-  jq -r ".[$index] | to_entries.[0] | $(build_format)" books/dao-de-jing.json
+  jq -r ".[$index] | to_entries.[0] | $(build_format)" $(dirname $0)/books/dao-de-jing.json
 }
 
 print_poem

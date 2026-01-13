@@ -1,5 +1,3 @@
 - Params: book name, poem name
 - CmdArgs: show books, list poems
 - Automatically derive poem count and choose randomly
-- change gia-fu-feng book name
-- make script work from any wd

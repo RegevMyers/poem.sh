@@ -1,7 +1,7 @@
 {
-  "Title": "Dao De Jing",
-  "Author": "Lao Tzu",
-  "Content": [
+  "book": "Dao De Jing",
+  "author": "Lao Tzu",
+  "text": [
     {
       "One": "The Tao that can be told is not the eternal Tao.\nThe name that can be named is not the eternal name.\nThe nameless is the beginning of heaven and Earth.\nThe named is the mother of the ten thousand things.\nEver desireless, one can see the mystery.\nEver desiring, one sees the manifestations.\nThese two spring from the same source but differ in name;\nthis appears as darkness.\nDarkness within darkness.\nThe gate to all mystery."
     },

@@ -1,3 +1,4 @@
-- Params: book name, poem name
 - CmdArgs: show books, list poems
 - Automatically derive poem count and choose randomly
+- create default config file if it does not exist
+- put `jq ... | sed ... | sed ...` in function (maybe: use it all the time?)

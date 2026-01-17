@@ -28,9 +28,9 @@ function print_poem {
     local n_texts=$(jq ".text | length - 1" "$book_file")
     local index=$(shuf -i 0-$n_texts -n 1)
 
-    local book=$(jq -r ".book" "$book_file")
-    local author=$(jq -r ".author" "$book_file")
-    local title=$(jq -r ".text[$index] | to_entries[0] | .key" "$book_file")
+    local book=$(jq ".book" "$book_file" | unescape-quotes)
+    local author=$(jq ".author" "$book_file" | unescape-quotes)
+    local title=$(jq ".text[$index] | to_entries[0] | .key" "$book_file" | unescape-quotes)
     local content=$(jq ".text[$index] | to_entries[0] | .value" "$book_file" | unescape-quotes)
     
     declare -A placeholders=(

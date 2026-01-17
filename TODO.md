@@ -1,4 +1,3 @@
 - CmdArgs: show books, list poems
 - Automatically derive poem count and choose randomly
-- create default config file if it does not exist
 - use `unexcape-qoute` all the time?

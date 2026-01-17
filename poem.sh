@@ -8,6 +8,10 @@ function unescape-quotes {
 function populate_config {
     config_file="${XDG_CONFIG_HOME:-$HOME/.config}/poem/config.json"
     
+    if [ ! -f $config_file ]; then
+        cp "$(dirname $0)/default-config.json" "$config_file"
+    fi
+
     config_format=$(jq ".format" "$config_file" | unescape-quotes)
     style=(
         [default]=$(jq -r ".style.default" "$config_file")

@@ -32,11 +32,7 @@ Each book is a `json` file in `books/`, in the following format:
   "text": [
     {
       "text1_title": "text1_content"
-    },
-    {
-      "text2_title": "text2_content"
-    },
-    ...
+    }
   ]
 }
 ```

@@ -39,7 +39,7 @@ function print_poem {
         ["#C"]="${style[content]}$content${style[default]}"
     )
 
-    output=${style[default]}$config_format${style[default]}
+    output="${style[default]}$config_format${style[default]}"
     for placeholder in ${!placeholders[@]}; do
         output="${output//"$placeholder"/${placeholders[$placeholder]}}"
     done

@@ -23,9 +23,10 @@ function populate_config {
 }
 
 function print_poem {
-    local index=$(shuf -i 0-80 -n 1)
-
     local book_file="$(dirname $0)/books/dao-de-jing.json"
+
+    local n_texts=$(jq ".text | length - 1" "$book_file")
+    local index=$(shuf -i 0-$n_texts -n 1)
 
     local book=$(jq -r ".book" "$book_file")
     local author=$(jq -r ".author" "$book_file")

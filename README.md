@@ -21,3 +21,23 @@ You may additionally specify a style for each.
 
 > See `default-config.json` for an example
 
+## Books
+
+Each book is a `json` file in `books/`, in the following format:
+
+``` json
+{
+  "book": "Book Name",
+  "author": "Author",
+  "text": [
+    {
+      "text1_title": "text1_content"
+    },
+    {
+      "text2_title": "text2_content"
+    },
+    ...
+  ]
+}
+```
+

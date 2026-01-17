@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 declare config_format
 declare -A style
 
@@ -48,5 +50,9 @@ function print_poem {
     echo -e $output
 }
 
-populate_config
-print_poem
+function main {
+    populate_config
+    print_poem
+}
+
+main

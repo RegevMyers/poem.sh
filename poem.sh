@@ -2,6 +2,7 @@
 
 declare config_format
 declare -A style
+declare -A args
 
 function unescape-quotes {
     sed -E 's|^"(.*)"$|\1|g' | sed -E 's|\\"|"|g'
@@ -25,10 +26,54 @@ function populate_config {
 }
 
 function print_poem {
-    local book_file="$(dirname $0)/books/dao-de-jing.json"
+    # TODO: match author too
+    if [[ ${args[book]} ]]; then
+        for book in "$(dirname $0)"/books/*; do
+            current_book=$(jq -r ".book" "$book")
+            if [[ $current_book = ${args[book]} ]]; then
+                book_file=$book
+                break
+            fi
+        done
+        if [[ -z $book_file ]]; then
+            echo -e "\033[00m[ \033[31m!\033[00m ] Book '${args[book]}' not found"
+            exit 1
+        fi
+    else
+        book_file="$(dirname $0)/books/dao-de-jing.json"  #TODO: Make random
+    fi
 
-    local n_texts=$(jq ".text | length - 1" "$book_file")
-    local index=$(shuf -i 0-$n_texts -n 1)
+    local n_texts=$(jq -r ".text | length - 1" "$book_file")
+    
+    if [[ ${args[index]} && ${args[name]} ]]; then
+        echo -e "\033[00m[ \033[31m!\033[00m ] Can't specify both '--index' and '--name'"
+        exit 1
+    fi
+
+    if [[ ${args[index]} ]]; then
+        index=$((${args[index]} - 1))
+
+        if [[ $index -lt 0 ]]; then
+            echo -e "\033[00m[ \033[31m!\033[00m ] Index ${args[index]} is too small"
+            exit 1
+        fi
+
+        if [[ $index -gt $n_texts ]]; then
+            echo -e "\033[00m[ \033[31m!\033[00m ] Index ${args[index]} too targe; There are only $n_texts texts"
+            exit 1
+        fi
+    else
+        index=$(shuf -i 0-$n_texts -n 1)
+    fi
+
+    if [[ ${args[name]} ]]; then
+        index=$(jq -r "first(.text | to_entries[] | select(.value | has(\"${args[name]}\")) | .key)" $book_file)
+
+        if [[ -z $index ]]; then
+            echo -e "\033[00m[ \033[31m!\033[00m ] Text '${args[name]}' not found"
+            exit 1
+        fi
+    fi
 
     local book=$(jq ".book" "$book_file" | unescape-quotes)
     local author=$(jq ".author" "$book_file" | unescape-quotes)
@@ -50,9 +95,43 @@ function print_poem {
     echo -e $output
 }
 
+function parse_command_line {
+    vars=$(getopt -o '' --long 'book:,author:,name:,index:' -n 'poem' -- "$@") || exit 1
+    eval set -- "$vars"
+    
+    while true; do
+        case "$1" in
+            '--book')
+                args[book]="$2"
+                shift 2
+                ;;
+            '--author')
+                args[author]="$2"
+                shift 2
+                ;;
+            '--name')
+                args[name]="$2"
+                shift 2
+                ;;
+            '--index')
+                args[index]="$2"
+                shift 2
+                ;;
+            '--')
+                shift 1
+                break
+                ;;
+            *)
+                echo -e "\033[00m[ \033[31m!\033[00m ] Bad parameter '$1'"
+                ;;
+        esac
+    done
+}
+
 function main {
+    parse_command_line "$@"
     populate_config
     print_poem
 }
 
-main
+main "$@"

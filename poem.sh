@@ -1,14 +1,54 @@
 #!/usr/bin/env bash
 
 declare config_format
+declare book_file
 declare -A style
 declare -A args
+
+function parse-cli {
+    vars=$(getopt -o '' --long 'book:,author:,name:,index:,read-book' -n 'poem' -- "$@") || exit 1
+    eval set -- "$vars"
+    
+    args[mode]="print-poem"
+
+    while true; do
+        case "$1" in
+            '--book')
+                args[book]="$2"
+                shift 2
+                ;;
+            '--author')
+                args[author]="$2"
+                shift 2
+                ;;
+            '--name')
+                args[name]="$2"
+                shift 2
+                ;;
+            '--index')
+                args[index]="$2"
+                shift 2
+                ;;
+            '--read-book')
+                args[mode]="read-book"
+                shift 1
+                ;;
+            '--')
+                shift 1
+                break
+                ;;
+            *)
+                echo -e "\033[00m[ \033[31m!\033[00m ] Bad parameter '$1'"
+                ;;
+        esac
+    done
+}
 
 function unescape-quotes {
     sed -E 's|^"(.*)"$|\1|g' | sed -E 's|\\"|"|g'
 }
 
-function populate_config {
+function populate-config {
     config_file="${XDG_CONFIG_HOME:-$HOME/.config}/poem/config.json"
     
     if [ ! -f $config_file ]; then
@@ -16,6 +56,7 @@ function populate_config {
     fi
 
     config_format=$(jq ".format" "$config_file" | unescape-quotes)
+
     style=(
         [default]=$(jq -r ".style.default" "$config_file")
         [book]=$(jq -r ".style.book" "$config_file")
@@ -23,10 +64,10 @@ function populate_config {
         [translator]=$(jq -r ".style.translator" "$config_file")
         [title]=$(jq -r ".style.title" "$config_file")
         [content]=$(jq -r ".style.content" "$config_file")
-    )
+   )
 }
 
-function print_poem {
+function get-book-file {
     # TODO: match author too
     if [[ ${args[book]} ]]; then
         for book in "$(dirname $0)"/books/*; do
@@ -41,11 +82,13 @@ function print_poem {
             exit 1
         fi
     else
-        book_file="$(dirname $0)/books/dao-de-jing.json"  #TODO: Make random
+        book_file="$(dirname $0)/books/dao-de-jing.json"  # TODO: Make random
     fi
+}
 
+function print-poem {
     local n_texts=$(jq -r ".text | length - 1" "$book_file")
-    
+
     if [[ ${args[index]} && ${args[name]} ]]; then
         echo -e "\033[00m[ \033[31m!\033[00m ] Can't specify both '--index' and '--name'"
         exit 1
@@ -98,43 +141,40 @@ function print_poem {
     echo -e $output
 }
 
-function parse_command_line {
-    vars=$(getopt -o '' --long 'book:,author:,name:,index:' -n 'poem' -- "$@") || exit 1
-    eval set -- "$vars"
+function read-book {
+    echo -e "\033[00m[ \033[32m+\033[00m ] Reading '${args[book]}', press any key to start..."
     
-    while true; do
-        case "$1" in
-            '--book')
-                args[book]="$2"
-                shift 2
-                ;;
-            '--author')
-                args[author]="$2"
-                shift 2
-                ;;
-            '--name')
-                args[name]="$2"
-                shift 2
-                ;;
-            '--index')
-                args[index]="$2"
-                shift 2
-                ;;
-            '--')
-                shift 1
-                break
-                ;;
-            *)
-                echo -e "\033[00m[ \033[31m!\033[00m ] Bad parameter '$1'"
-                ;;
-        esac
+    local last_index=$(jq -r ".text | length" "$book_file")
+
+    tput civis
+
+    for i in $(seq 1 $last_index); do
+        clear
+        args[index]=$i
+        print-poem
+        echo -ne "\n\033[00m[ \033[32m+\033[00m ] Press any key to continue..."
+        read -n 1 -s -r 
     done
+
+    tput cnorm
 }
 
 function main {
-    parse_command_line "$@"
-    populate_config
-    print_poem
+    parse-cli "$@"
+    populate-config
+    get-book-file
+
+    case ${args[mode]} in
+        'print-poem')
+            print-poem
+            ;;
+        'read-book')
+            read-book
+            ;;
+        *)
+            echo -e "\033[00m[ \033[31m!\033[00m ] Invalid mode '${args[mode]}' encountered"
+            ;;
+    esac
 }
 
 main "$@"

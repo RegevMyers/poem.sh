@@ -142,21 +142,17 @@ function print-poem {
 }
 
 function read-book {
-    echo -e "\033[00m[ \033[32m+\033[00m ] Reading '${args[book]}', press any key to start..."
-    
-    local last_index=$(jq -r ".text | length" "$book_file")
-
+    trap 'tput cnorm' EXIT 
     tput civis
 
+    local last_index=$(jq -r ".text | length" "$book_file")
     for i in $(seq 1 $last_index); do
         clear
         args[index]=$i
         print-poem
-        echo -ne "\n\033[00m[ \033[32m+\033[00m ] Press any key to continue..."
+        echo -e "\n\033[00m[ \033[32m+\033[00m ] Press any key to continue..."
         read -n 1 -s -r 
     done
-
-    tput cnorm
 }
 
 function main {

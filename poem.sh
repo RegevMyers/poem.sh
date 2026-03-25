@@ -20,6 +20,7 @@ function populate_config {
         [default]=$(jq -r ".style.default" "$config_file")
         [book]=$(jq -r ".style.book" "$config_file")
         [author]=$(jq -r ".style.author" "$config_file")
+        [translator]=$(jq -r ".style.translator" "$config_file")
         [title]=$(jq -r ".style.title" "$config_file")
         [content]=$(jq -r ".style.content" "$config_file")
     )
@@ -77,12 +78,14 @@ function print_poem {
 
     local book=$(jq ".book" "$book_file" | unescape-quotes)
     local author=$(jq ".author" "$book_file" | unescape-quotes)
+    local translator=$(jq ".translator" "$book_file" | unescape-quotes)
     local title=$(jq ".text[$index] | to_entries[0] | .key" "$book_file" | unescape-quotes)
     local content=$(jq ".text[$index] | to_entries[0] | .value" "$book_file" | unescape-quotes)
     
     declare -A placeholders=(
         ["#B"]="${style[book]}$book${style[default]}"
         ["#A"]="${style[author]}$author${style[default]}"
+        ["#R"]="${style[translator]}$translator${style[default]}"
         ["#T"]="${style[title]}$title${style[default]}"
         ["#C"]="${style[content]}$content${style[default]}"
     )

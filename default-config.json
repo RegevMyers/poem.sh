@@ -1,5 +1,5 @@
 {
-    "format": "#T | #B - #A\n\n#C",
+    "format": "#T | #B - #A (#R)\n\n#C",
     "style": {
         "default": "\u001b[0m",
         "book":    "\u001b[3m",

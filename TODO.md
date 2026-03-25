@@ -1,1 +1,2 @@
 - CmdArgs: show books, list poems
+- Support null in translator

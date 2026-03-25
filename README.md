@@ -12,10 +12,11 @@ The output format and be configured using the `poem.config` file found at `$XDG_
 
 In the "format" value you can use placeholders as follows:
 
-- `#B` - Book name
-- `#A` - Author name
-- `#T` - Poem title
-- `#C` - Poem content
+- `#B` - Book Name
+- `#A` - Author
+- `#R` - Translator
+- `#T` - Title
+- `#C` - Content
 
 You may additionally specify a style for each.
 
@@ -29,6 +30,7 @@ Each book is a `json` file in `books/`, in the following format:
 {
   "book": "Book Name",
   "author": "Author",
+  "translator": "Translator"
   "text": [
     {
       "text1_title": "text1_content"

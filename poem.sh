@@ -142,8 +142,8 @@ function print-poem {
 }
 
 function read-book {
-    trap 'tput rmcup; tput cnorm' EXIT 
-    tput smcup; tput civis
+    trap 'tput cnorm' EXIT 
+    tput civis
 
     local last_index=$(jq -r ".text | length" "$book_file")
     for i in $(seq 1 $last_index); do

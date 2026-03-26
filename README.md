@@ -6,7 +6,7 @@
 
 Run `poem.sh` to print a random poem from `books/` to the terminal.
 
-Use `--book` to specify the book name, `--name` or `--index` to specify the poem.
+Use `--book` to specify the book name (`fzf`), `--name` or `--index` to specify the poem.
 
 Use `--read-book` to read an entire book poem-by-poem.
 

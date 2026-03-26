@@ -70,13 +70,13 @@ function populate-config {
 function get-book-file {
     # TODO: match author too
     if [[ ${args[book]} ]]; then
+        declare -A books
         for book in "$(dirname $0)"/books/*; do
-            current_book=$(jq -r ".book" "$book")
-            if [[ $current_book = ${args[book]} ]]; then
-                book_file=$book
-                break
-            fi
+            books["$(jq -r .book $book)"]="$book"
         done
+        book_name=$(printf '%s\n' "${!books[@]}" | fzf -1 -q "${args[book]}")
+        book_file=${books[$book_name]}
+        echo "$book_name - $book_file"
         if [[ -z $book_file ]]; then
             echo -e "\033[00m[ \033[31m!\033[00m ] Book '${args[book]}' not found"
             exit 1

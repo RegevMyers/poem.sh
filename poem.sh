@@ -76,7 +76,6 @@ function get-book-file {
         done
         book_name=$(printf '%s\n' "${!books[@]}" | fzf -1 -q "${args[book]}")
         book_file=${books[$book_name]}
-        echo "$book_name - $book_file"
         if [[ -z $book_file ]]; then
             echo -e "\033[00m[ \033[31m!\033[00m ] Book '${args[book]}' not found"
             exit 1

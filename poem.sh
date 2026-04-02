@@ -29,7 +29,7 @@ function parse-cli {
                 args[index]="$2"
                 shift 2
                 ;;
-            '--read-book')
+            '--read')
                 args[mode]="read-book"
                 shift 1
                 ;;

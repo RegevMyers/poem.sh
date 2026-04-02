@@ -6,7 +6,7 @@ declare -A style
 declare -A args
 
 function parse-cli {
-    vars=$(getopt -o '' --long 'book:,author:,name:,index:,read-book' -n 'poem' -- "$@") || exit 1
+    vars=$(getopt -o '' --long 'book:,author:,name:,index:,read' -n 'poem' -- "$@") || exit 1
     eval set -- "$vars"
     
     args[mode]="print-poem"

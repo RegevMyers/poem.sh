@@ -6,13 +6,17 @@ declare -A style
 declare -A args
 
 function parse-cli {
-    vars=$(getopt -o '' --long 'book:,author:,name:,index:,read' -n 'poem' -- "$@") || exit 1
+    vars=$(getopt -o 'h' --long 'help,book:,author:,name:,index:,read' -n 'poem' -- "$@") || exit 1
     eval set -- "$vars"
     
     args[mode]="print-poem"
 
     while true; do
         case "$1" in
+            '--help'|'-h')
+                args[mode]="print-help"
+                break
+                ;;
             '--book')
                 args[book]="$2"
                 shift 2
@@ -38,7 +42,8 @@ function parse-cli {
                 break
                 ;;
             *)
-                echo -e "\033[00m[ \033[31m!\033[00m ] Bad parameter '$1'"
+                echo -e "\033[0;00m[ \033[31m!\033[00m ] Bad parameter '$1'"
+                echo -e "\033[0;00m[ \033[35m*\033[00m ] Try '$0 --help' for help"
                 ;;
         esac
     done
@@ -77,7 +82,7 @@ function get-book-file {
         book_name=$(printf '%s\n' "${!books[@]}" | fzf -1 -q "${args[book]}")
         book_file=${books[$book_name]}
         if [[ -z $book_file ]]; then
-            echo -e "\033[00m[ \033[31m!\033[00m ] Book '${args[book]}' not found"
+            echo -e "\033[0;00m[ \033[31m!\033[00m ] Book '${args[book]}' not found"
             exit 1
         fi
     else
@@ -85,11 +90,24 @@ function get-book-file {
     fi
 }
 
+function print-help {
+    echo -ne "\033[0;00m"
+    echo "USAGE: $0 [OPTION]"
+    echo
+    echo "OPTIONS:"
+    echo "    --help    Help"
+    echo "    --book    Book name (fzf)"
+    echo "    --author  Author name"
+    echo "    --name    Poem name"
+    echo "    --index   Poem index"
+    echo "    --read    Read entire book"
+}
+
 function print-poem {
     local n_texts=$(jq -r ".text | length - 1" "$book_file")
 
     if [[ ${args[index]} && ${args[name]} ]]; then
-        echo -e "\033[00m[ \033[31m!\033[00m ] Can't specify both '--index' and '--name'"
+        echo -e "\033[0;00m[ \033[31m!\033[00m ] Can't specify both '--index' and '--name'"
         exit 1
     fi
 
@@ -97,12 +115,12 @@ function print-poem {
         index=$((${args[index]} - 1))
 
         if [[ $index -lt 0 ]]; then
-            echo -e "\033[00m[ \033[31m!\033[00m ] Index ${args[index]} is too small"
+            echo -e "\033[0;00m[ \033[31m!\033[00m ] Index ${args[index]} is too small"
             exit 1
         fi
 
         if [[ $index -gt $n_texts ]]; then
-            echo -e "\033[00m[ \033[31m!\033[00m ] Index ${args[index]} too large; There are only $n_texts texts"
+            echo -e "\033[0;00m[ \033[31m!\033[00m ] Index ${args[index]} too large; There are only $n_texts texts"
             exit 1
         fi
     else
@@ -113,7 +131,7 @@ function print-poem {
         index=$(jq -r "first(.text | to_entries[] | select(.value | has(\"${args[name]}\")) | .key)" $book_file)
 
         if [[ -z $index ]]; then
-            echo -e "\033[00m[ \033[31m!\033[00m ] Text '${args[name]}' not found"
+            echo -e "\033[0;00m[ \033[31m!\033[00m ] Text '${args[name]}' not found"
             exit 1
         fi
     fi
@@ -134,7 +152,7 @@ function print-poem {
 
     output="${style[default]}$config_format${style[default]}"
     for placeholder in ${!placeholders[@]}; do
-        output="${output//"$placeholder"/${placeholders[$placeholder]}}"
+        output="${output//"$placeholder"/"${placeholders[$placeholder]}"}"
     done
 
     echo -e $output
@@ -149,7 +167,7 @@ function read-book {
         clear
         args[index]=$i
         print-poem
-        echo -e "\n\033[00m[ \033[32m+\033[00m ] Press any key to continue..."
+        echo -e "\n\033[0;00m[ \033[32m+\033[00m ] Press any key to continue..."
         read -n 1 -s -r 
     done
 }
@@ -160,6 +178,9 @@ function main {
     get-book-file
 
     case ${args[mode]} in
+        'print-help')
+            print-help
+            ;;
         'print-poem')
             print-poem
             ;;
@@ -167,7 +188,7 @@ function main {
             read-book
             ;;
         *)
-            echo -e "\033[00m[ \033[31m!\033[00m ] Invalid mode '${args[mode]}' encountered"
+            echo -e "\033[0;00m[ \033[31m!\033[00m ] Invalid mode '${args[mode]}' encountered"
             ;;
     esac
 }

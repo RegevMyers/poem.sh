@@ -52,7 +52,7 @@ function populate-config {
     config_file="${XDG_CONFIG_HOME:-$HOME/.config}/poem/config.json"
     
     if [ ! -f $config_file ]; then
-        cp "$(dirname $0)/default-config.json" "$config_file"
+        cp "${XDG_DATA_HOME}/poem/default-config.json" "$config_file"
     fi
 
     config_format=$(jq ".format" "$config_file" | unescape-quotes)
@@ -71,7 +71,7 @@ function get-book-file {
     # TODO: match author too
     if [[ ${args[book]} ]]; then
         declare -A books
-        for book in "$(dirname $0)"/books/*; do
+        for book in "${XDG_DATA_HOME}"/poem/books/*; do
             books["$(jq -r .book $book)"]="$book"
         done
         book_name=$(printf '%s\n' "${!books[@]}" | fzf -1 -q "${args[book]}")
@@ -81,7 +81,7 @@ function get-book-file {
             exit 1
         fi
     else
-        book_file="$(dirname $0)/books/dao-de-jing.json"  # TODO: Make random
+        book_file="${XDG_DATA_HOME}/poem/books/dao-de-jing.json"  # TODO: Make random
     fi
 }
 

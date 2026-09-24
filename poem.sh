@@ -120,7 +120,7 @@ function print-poem {
         fi
 
         if [[ $index -gt $n_texts ]]; then
-            echo -e "\033[0;00m[ \033[31m!\033[00m ] Index ${args[index]} too large; There are only $n_texts texts"
+            echo -e "\033[0;00m[ \033[31m!\033[00m ] Index ${args[index]} too large; There are only $(($n_texts + 1)) texts"
             exit 1
         fi
     else
